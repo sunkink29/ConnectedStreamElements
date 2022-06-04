@@ -1,0 +1,65 @@
+{
+  "spinButton": {
+    "type": "button",
+    "label": "Spin wheel",
+    "value": "spin"
+  },
+  "wheelName": {
+    "type": "text",
+    "label": "Wheel Name",
+    "value": "wheel1"
+  },
+  "segmentConfig": {
+    "type": "text",
+    "label": "Segment Config",
+    "value": "{\"config\": [{\"label\":\"5x\",\"color\":\"#ff0000\",\"weight\":5,\"multiplier\":5},{\"label\":\"-3x\",\"color\":\"#00ff00\",\"weight\":10,\"multiplier\":-3},{\"label\":\",-10x\",\"color\":\"#ffffff\",\"weight\":3,\"multiplier\":-10},{\"label\":\",3x\",\"color\":\"#123123\",\"weight\":10,\"multiplier\":3},{\"label\":\"-5x\",\"color\":\"#421221\",\"weight\":5,\"multiplier\":-5},{\"label\":\"10x\",\"weight\":3,\"multiplier\":10}]}"
+  },
+  "displayImage": {
+    "type": "checkbox",
+    "label": "Display Image",
+    "value": false
+  },
+  "wheelImage": {
+    "type": "image-input",
+    "label": "Wheel image image(instead of text)",
+    "value": ""
+  },
+  "wheelSize": {
+    "type": "number",
+    "label": "Wheel size",
+    "value": 412
+  },
+  "innerRadius": {
+    "type": "number",
+    "label": "Inner radius size",
+    "value": 70
+  },
+  "pins": {
+    "type": "number",
+    "label": "Pins count",
+    "value": 30
+  },
+  "background": {
+    "type": "image-input",
+    "label": "Background image",
+    "value": "https://cdn.streamelements.com/uploads/04d60fdc-a64e-4a72-ace0-8bcee7c51713.png"
+  },
+  "textSize": {
+    "type": "number",
+    "label": "Text Size",
+    "value": 20
+  },
+  "spins": {
+    "type": "number",
+    "label": "Number of spins",
+    "value": 5
+  },
+  "duration": {
+    "type": "slider",
+    "label": "Duration (s)",
+    "value": 3,
+    "min": 0,
+    "max": 10,
+    "steps": 1
+  }
+}
