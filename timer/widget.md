@@ -1,0 +1,1 @@
+A simple timer that can be connected to a spinner
