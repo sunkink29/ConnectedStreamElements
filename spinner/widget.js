@@ -1,9 +1,8 @@
-const start = Date.now();
 let fields;
 let wheel;
 let segments;
 let wheelSpinning = false
-let curNum = 1;
+let curData = { num: 1, type: 'subbed', name: 'test User', amount: 1 }
 
 const random_hex_color_code = () => {
   let n = (Math.random() * 0xfffff * 1000000).toString(16);
@@ -57,7 +56,6 @@ window.addEventListener('onEventReceived', function (obj) {
   const listener = obj.detail.listener;
   const event = obj.detail.event;
   const isTriggered = event.data?.value.dest === fields.wheelName;
-  const timeDiff = Math.abs(event.data?.value.start - start)
 
   if (event.listener === 'widget-button') {
     if (event.field === 'spinButton') {
@@ -65,9 +63,11 @@ window.addEventListener('onEventReceived', function (obj) {
       // wheel.stopAnimation(false);
       // wheel.startAnimation();
       // wheelSpinning = true;
+    } else if (event.field === 'reload') {
+      document.location.href = document.location.href;
     }
-  } else if (listener === 'kvstore:update' && timeDiff < 1000 && isTriggered && !wheelSpinning) {
-    curNum = event.data.value.num;
+  } else if (listener === 'kvstore:update' && isTriggered && !wheelSpinning) {
+    curData = event.data.value.data;
     wheel.rotationAngle = 0;
     wheel.stopAnimation(false);
     wheel.startAnimation();
@@ -80,11 +80,10 @@ function onWheelStop() {
   const segment = segments[wheel.getIndicatedSegmentNumber() - 1];
   if (segment.dest) {
     SE_API.store.set('test', {
-      start: start,
       dest: segment.dest,
       msg: segment.msg,
-      num: curNum * segment.multiplier,
+      data: { ...curData, num: curData.num * segment.multiplier },
+      curTime: Date.now(),
     });
   }
-  console.log(curNum * segment.multiplier)
 }

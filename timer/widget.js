@@ -12,8 +12,7 @@ var maxEndDate = new Date().getTime();
 var show_info = false;
 var info_interval = 0;
 var info_duration = 0;
-var isBulkGifted = false;
-var bulkAmount = 0;
+var lastEventTime = Date.now();
 
 window.addEventListener('onWidgetLoad', function (obj) {
   fields = obj.detail.fieldData;
@@ -79,6 +78,8 @@ window.addEventListener('onWidgetLoad', function (obj) {
 window.addEventListener('onEventReceived', function (obj) {
   const listener = obj.detail.listener;
   const event = obj["detail"]["event"];
+  const eventMsg = event.data?.value;
+  const isTriggered = eventMsg?.dest === fields.name;
 
   if (event.listener === 'widget-button') {
     if (event.field === 'reset_time') {
@@ -86,7 +87,12 @@ window.addEventListener('onEventReceived', function (obj) {
       countDownTimer = countDownTimer + (initial_duration * 1000 * 60 * 60);
     } else if (event.field === 'store_time') {
       SE_API.store.set('curTime', countDownTimer);
+    } else if (event.field === 'reload') {
+      document.location.href = document.location.href;
     }
+  } else if (listener === 'kvstore:update' && isTriggered && eventMsg.curTime > lastEventTime) {
+    lastEventTime = eventMsg.curTime;
+    addTimeToCounter(eventMsg.data.num, eventMsg.data, eventMsg.data.type);
   }
 });
 
@@ -100,8 +106,6 @@ function addTimeToCounter(minToAdd, event, type) {
     countDownTimer = countDownTimer + (minToAdd * 60000);
   }
   SE_API.store.set('curTime', countDownTimer);
-
-  console.log(event)
 
   var eventMsg = event["name"] + " " + type;
   var amountString = "";

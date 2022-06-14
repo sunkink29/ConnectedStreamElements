@@ -99,5 +99,10 @@
     "type": "number",
     "label": "How long to show rules for (s)",
     "value": 30
+  },
+  "name": {
+    "type": "text",
+    "label": "Timer Name",
+    "value": "timer1"
   }
 }
