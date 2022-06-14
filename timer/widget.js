@@ -1,3 +1,5 @@
+var isEditor = false;
+SE_API.getOverlayStatus().then((value) => isEditor = value.isEditorMode);
 var fields;
 var sub_time = 0;
 var bit_amt = 0;
@@ -79,7 +81,7 @@ window.addEventListener('onEventReceived', function (obj) {
   const listener = obj.detail.listener;
   const event = obj["detail"]["event"];
   const eventMsg = event.data?.value;
-  const isTriggered = eventMsg?.dest === fields.name;
+  const isTriggered = eventMsg?.dest === fields.name && eventMsg?.isEditor === isEditor;
 
   if (event.listener === 'widget-button') {
     if (event.field === 'reset_time') {
@@ -87,7 +89,7 @@ window.addEventListener('onEventReceived', function (obj) {
       countDownTimer = countDownTimer + (initial_duration * 1000 * 60 * 60);
     } else if (event.field === 'store_time') {
       SE_API.store.set('curTime', countDownTimer);
-    } else if (event.field === 'reload') {
+    } else if (event.field === 'reload' && isEditor) {
       document.location.href = document.location.href;
     }
   } else if (listener === 'kvstore:update' && isTriggered && eventMsg.curTime > lastEventTime) {
@@ -105,7 +107,9 @@ function addTimeToCounter(minToAdd, event, type) {
   else {
     countDownTimer = countDownTimer + (minToAdd * 60000);
   }
-  SE_API.store.set('curTime', countDownTimer);
+  if (!isEditor) {
+    SE_API.store.set('curTime', countDownTimer);
+  }
 
   var eventMsg = event["name"] + " " + type;
   var amountString = "";

@@ -1,3 +1,5 @@
+var isEditor = false;
+SE_API.getOverlayStatus().then((value) => isEditor = value.isEditorMode);
 let fields;
 let wheel;
 let segments;
@@ -55,7 +57,8 @@ window.addEventListener('onWidgetLoad', function (obj) {
 window.addEventListener('onEventReceived', function (obj) {
   const listener = obj.detail.listener;
   const event = obj.detail.event;
-  const isTriggered = event.data?.value.dest === fields.wheelName;
+  const eventMsg = event.data?.value;
+  const isTriggered = eventMsg?.dest === fields.wheelName && eventMsg?.isEditor === isEditor;
 
   if (event.listener === 'widget-button') {
     if (event.field === 'spinButton') {
@@ -63,7 +66,7 @@ window.addEventListener('onEventReceived', function (obj) {
       // wheel.stopAnimation(false);
       // wheel.startAnimation();
       // wheelSpinning = true;
-    } else if (event.field === 'reload') {
+    } else if (event.field === 'reload' && isEditor) {
       document.location.href = document.location.href;
     }
   } else if (listener === 'kvstore:update' && isTriggered && !wheelSpinning) {
@@ -84,6 +87,7 @@ function onWheelStop() {
       msg: segment.msg,
       data: { ...curData, num: curData.num * segment.multiplier },
       curTime: Date.now(),
+      isEditor,
     });
   }
 }
