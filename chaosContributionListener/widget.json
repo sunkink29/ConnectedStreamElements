@@ -1,0 +1,87 @@
+{
+  "wheelName": {
+    "type": "text",
+    "label": "Wheel Name"
+  },
+  "timerName": {
+    "type": "text",
+    "label": "TimerName"
+  },
+  "show_info": {
+    "group": "Info Panel",
+    "type": "checkbox",
+    "label": "Show Info Panel"
+  },
+  "info_interval": {
+    "group": "Info Panel",
+    "type": "number",
+    "label": "Show every X Minutes",
+    "value": 5
+  },
+  "info_duration": {
+    "group": "Info Panel",
+    "type": "number",
+    "label": "How long to show rules for (s)",
+    "value": 30
+  },
+  "sub_time": {
+    "group": "Info Panel",
+    "type": "number",
+    "label": "Set Sub Increment (m)",
+    "value": 5
+  },
+  "bit_minimum": {
+    "group": "Info Panel",
+    "type": "number",
+    "label": "Set Minimum Bit Donation",
+    "value": 100
+  },
+  "bit_time": {
+    "group": "Info Panel",
+    "type": "number",
+    "label": "Set Bit Increment (m)",
+    "value": 1
+  },
+  "tip_currency": {
+    "group": "Info Panel",
+    "type": "text",
+    "label": "Set Currency",
+    "value": "$"
+  },
+  "tip_minimum": {
+    "group": "Info Panel",
+    "type": "number",
+    "label": "Set Minimum Donation Amount",
+    "value": 5
+  },
+  "tip_time": {
+    "group": "Info Panel",
+    "type": "number",
+    "label": "Set Tip Increment (m)",
+    "value": 5
+  },
+  "fontFamily": {
+    "group": "Style",
+    "type": "googleFont",
+    "label": "Select a font:",
+    "value": "Roboto"
+  },
+  "fontColour": {
+    "group": "Style",
+    "type": "colorpicker",
+    "label": "Select Text Colour",
+    "value": "#0000FF"
+  },
+  "bgColour": {
+    "group": "Style",
+    "type": "colorpicker",
+    "label": "Select BG Colour",
+    "value": "rgba(0, 0, 255, 0.31)"
+  },
+  "borderColour": {
+    "group": "Style",
+    "type": "colorpicker",
+    "label": "Select Border Colour",
+    "value": "#0000FF"
+  }
+}

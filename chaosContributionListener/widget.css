@@ -1,0 +1,25 @@
+p{
+  font-family: {{fontFamily}};
+  color: {{fontColour}}; 
+  font-weight:bold;
+  margin:0px;
+  padding:10px;
+}
+
+h1{
+  font-family: {{fontFamily}};
+  color: {{fontColour}}; 
+  font-weight:bold;
+  font-size: 2em;
+  padding:10px;
+}
+
+.rules{
+  background-color: {{bgColour}}; 
+  border: 5px solid {{borderColour}};
+  border-radius: 20px; 
+}
+
+.rules p{
+ font-size:1.3em; 
+}

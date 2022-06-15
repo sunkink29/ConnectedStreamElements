@@ -1,12 +1,11 @@
-var fields;
-var isEditor = false;
-var countDownTimer = Date.now();
-var maxEndDate = Date.now();
-var lastEventTime = 0;
+let fields;
+let isEditor = false;
+let countDownTimer = Date.now();
+let maxEndDate = Date.now();
+let lastEventTime = 0;
 
 function onWidgetLoad(obj) {
   fields = obj.detail.fieldData;
-  const { max_duration } = fields;
 
   SE_API.getOverlayStatus().then((value) => isEditor = value.isEditorMode);
 
@@ -27,32 +26,8 @@ function onWidgetLoad(obj) {
     document.getElementById('countdown').innerHTML = days + "d " + hours + "h " + minutes + "m " + seconds + "s";
   }, 1000);
 
-  //This section sets all the text. So then in the repeating function, I only need to show/hide, rather than re-setting the p values
-  const subText = "Subs add " + fields.sub_time.toString() + " minutes to the stream";
-  const bitText = "Each " + fields.bit_minimum.toString() + " bits will add " + fields.bit_time.toString() + " minutes to the stream";
-  const tipText = "Each " + fields.tip_currency + fields.tip_minimum.toString() + " donation will add " + fields.tip_time.toString() + " minutes to the stream";
-  if (max_duration > 0) {
-    maxText = "The stream will last a maximum of " + max_duration.toString() + " hours";
-  }
-
-  DOM.setText("#SubsText", subText);
-  DOM.setText("#BitsText", bitText);
-  DOM.setText("#TipsText", tipText);
-  DOM.setText("#MaxText", maxText);
-  DOM.find("#infoPanel").hidden = true;
-
   DOM.find('#event').hidden = true;
   DOM.find('.eventContainer').hidden = true;
-  if (fields.show_info) {
-    setInterval(function () {
-      //Here we will show the panel, delay then hide the panel. 
-      //$('#infoPanel').show().delay(info_duration).hide();
-      DOM.find('#infoPanel').hidden = false;
-      setTimeout(function () {
-        DOM.find('#infoPanel').hidden = true;
-      }, fields.info_duration * 1000)
-    }, fields.info_interval * 60000);
-  }
 }
 
 function onWidgetButton(data) {
@@ -79,14 +54,7 @@ function onKVStoreUpdate(data) {
 }
 
 function addTimeToCounter(minToAdd, event, type) {
-  var newTime = countDownTimer + (minToAdd * 60000);
-  //logic to check to see if the time added would take the stream over the maximun set
-  if ((newTime > maxEndDate) && (fields.max_duration > 0)) {
-    countDownTimer = maxEndDate;
-  }
-  else {
-    countDownTimer = countDownTimer + (minToAdd * 60000);
-  }
+  countDownTimer = countDownTimer + (minToAdd * 60000);
   if (!isEditor) {
     SE_API.store.set('curTime', countDownTimer);
   }
@@ -133,10 +101,12 @@ function addTimeToCounter(minToAdd, event, type) {
 function clearEvent() {
   $('.eventContainer').animate({ height: "0px" }).hide();
   $('#event').hide();
+  SE_API.store.set('timeAdded', {
+    curTime: Date.now(),
+    isEditor,
+  });
 }
 
 function resetTimer() {
-  let curTime = Date.now();
-  maxEndDate = curTime + (fields.max_duration * 1000 * 60 * 60);
-  countDownTimer = curTime + (fields.initial_duration * 1000 * 60 * 60);
+  countDownTimer = Date.now() + (fields.initial_duration * 1000 * 60 * 60);
 }

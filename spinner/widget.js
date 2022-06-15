@@ -4,7 +4,7 @@ let wheel;
 let segments;
 let wheelSpinning = false
 let curData = { num: 1, type: 'subbed', name: 'test User', amount: 1 }
-var lastEventTime = 0;
+let lastEventTime = 0;
 
 function onWidgetLoad(obj) {
   fields = obj.detail.fieldData;
