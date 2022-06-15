@@ -50,7 +50,6 @@ h1{
 
 .eventContainer{
   background-color: {{bgColour}};
-  display:block;
   border-radius: 20px;
   height:0px; 
   float:right;

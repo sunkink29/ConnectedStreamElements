@@ -1,57 +1,21 @@
-var isEditor = false;
-SE_API.getOverlayStatus().then((value) => isEditor = value.isEditorMode);
 var fields;
-var sub_time = 0;
-var bit_amt = 0;
-var bit_time = 0;
-var tip_amt = 0;
-var tip_time = 0;
-var tip_currency = "$";
-var countDownTimer = new Date().getTime();
-var initial_duration = 0;
-var max_duration = 0;
-var maxEndDate = new Date().getTime();
-var show_info = false;
-var info_interval = 0;
-var info_duration = 0;
-var lastEventTime = Date.now();
+var isEditor = false;
+var countDownTimer = Date.now();
+var maxEndDate = Date.now();
+var lastEventTime = 0;
 
-window.addEventListener('onWidgetLoad', function (obj) {
+function onWidgetLoad(obj) {
   fields = obj.detail.fieldData;
-  let { sub_time, bit_time, tip_time, tip_currency } = fields;
-  initial_duration = fields.initial_duration;
-  max_duration = fields.max_duration;
-  show_info = fields.show_info;
-  info_interval = fields.info_interval;
-  info_duration = fields.info_duration;
-  bit_amt = fields.bit_minimum;
-  tip_amt = fields.tip_minimum;
+  const { max_duration } = fields;
 
-  //This is the maximum end time for the stream. We need to use this when we add time
-  //to ensure we don't exceed this. 
-  maxEndDate = maxEndDate + (max_duration * 1000 * 60 * 60);
-  countDownTimer = new Date().getTime();
-  countDownTimer = countDownTimer + (initial_duration * 1000 * 60 * 60);
+  SE_API.getOverlayStatus().then((value) => isEditor = value.isEditorMode);
+
+  resetTimer();
   SE_API.store.get('curTime').then(obj => {
     if (obj.value) {
       countDownTimer = obj.value
     }
   });
-
-  //This section sets all the text. So then in the repeating function, I only need to show/hide, rather than re-setting the p values
-  const subText = "Subs add " + sub_time.toString() + " minutes to the stream";
-  const bitText = "Each " + bit_amt.toString() + " bits will add " + bit_time.toString() + " minutes to the stream";
-  const tipText = "Each " + tip_currency + tip_amt.toString() + " donation will add " + tip_time.toString() + " minutes to the stream";
-  if (max_duration > 0) {
-    maxText = "The stream will last a maximum of " + max_duration.toString() + " hours";
-  }
-
-  $('#SubsText').text(subText);
-  $('#BitsText').text(bitText);
-  $('#TipsText').text(tipText);
-  $('#MaxText').text(maxText);
-  $('#infoPanel').hide();
-
 
   var x = setInterval(function () {
     var now = new Date().getTime();
@@ -63,45 +27,61 @@ window.addEventListener('onWidgetLoad', function (obj) {
     document.getElementById('countdown').innerHTML = days + "d " + hours + "h " + minutes + "m " + seconds + "s";
   }, 1000);
 
-  $('#event').hide();
-  $('.eventContainer').hide();
-  info_interval = info_interval * 60000;
-  info_duration = info_duration * 1000;
-  if (show_info) {
-    var y = setInterval(function () {
+  //This section sets all the text. So then in the repeating function, I only need to show/hide, rather than re-setting the p values
+  const subText = "Subs add " + fields.sub_time.toString() + " minutes to the stream";
+  const bitText = "Each " + fields.bit_minimum.toString() + " bits will add " + fields.bit_time.toString() + " minutes to the stream";
+  const tipText = "Each " + fields.tip_currency + fields.tip_minimum.toString() + " donation will add " + fields.tip_time.toString() + " minutes to the stream";
+  if (max_duration > 0) {
+    maxText = "The stream will last a maximum of " + max_duration.toString() + " hours";
+  }
+
+  DOM.setText("#SubsText", subText);
+  DOM.setText("#BitsText", bitText);
+  DOM.setText("#TipsText", tipText);
+  DOM.setText("#MaxText", maxText);
+  DOM.find("#infoPanel").hidden = true;
+
+  DOM.find('#event').hidden = true;
+  DOM.find('.eventContainer').hidden = true;
+  if (fields.show_info) {
+    setInterval(function () {
       //Here we will show the panel, delay then hide the panel. 
       //$('#infoPanel').show().delay(info_duration).hide();
-      $('#infoPanel').show("fast").delay(info_duration).hide("fast");
-    }, info_interval);
+      DOM.find('#infoPanel').hidden = false;
+      setTimeout(function () {
+        DOM.find('#infoPanel').hidden = true;
+      }, fields.info_duration * 1000)
+    }, fields.info_interval * 60000);
   }
-});
+}
 
-//** UPDATE INFO WIDGET INFORMATION
-window.addEventListener('onEventReceived', function (obj) {
-  const listener = obj.detail.listener;
-  const event = obj["detail"]["event"];
-  const eventMsg = event.data?.value;
-  const isTriggered = eventMsg?.dest === fields.name && eventMsg?.isEditor === isEditor;
-
-  if (event.listener === 'widget-button') {
-    if (event.field === 'reset_time') {
-      countDownTimer = new Date().getTime();
-      countDownTimer = countDownTimer + (initial_duration * 1000 * 60 * 60);
-    } else if (event.field === 'store_time') {
-      SE_API.store.set('curTime', countDownTimer);
-    } else if (event.field === 'reload' && isEditor) {
-      document.location.href = document.location.href;
-    }
-  } else if (listener === 'kvstore:update' && isTriggered && eventMsg.curTime > lastEventTime) {
-    lastEventTime = eventMsg.curTime;
-    addTimeToCounter(eventMsg.data.num, eventMsg.data, eventMsg.data.type);
+function onWidgetButton(data) {
+  if (data.field === 'reset_time') {
+    resetTimer();
+  } else if (data.field === 'store_time') {
+    SE_API.store.set('curTime', countDownTimer);
+  } else if (data.field === 'reload' && isEditor) {
+    document.location.href = document.location.href;
   }
-});
+}
+
+function onKVStoreUpdate(data) {
+  const value = data.value
+  const isEventMsg = data.key === 'customWidget.eventMessage';
+  const nameMatch = value.dest === fields.name;
+  const isEditorMatch = value.isEditor === isEditor
+  const newEvent = value.curTime > lastEventTime;
+
+  if (isEventMsg && nameMatch && isEditorMatch && newEvent) {
+    lastEventTime = value.curTime;
+    addTimeToCounter(value.data.num, value.data, value.data.type);
+  }
+}
 
 function addTimeToCounter(minToAdd, event, type) {
   var newTime = countDownTimer + (minToAdd * 60000);
   //logic to check to see if the time added would take the stream over the maximun set
-  if ((newTime > maxEndDate) && (max_duration > 0)) {
+  if ((newTime > maxEndDate) && (fields.max_duration > 0)) {
     countDownTimer = maxEndDate;
   }
   else {
@@ -153,4 +133,10 @@ function addTimeToCounter(minToAdd, event, type) {
 function clearEvent() {
   $('.eventContainer').animate({ height: "0px" }).hide();
   $('#event').hide();
+}
+
+function resetTimer() {
+  let curTime = Date.now();
+  maxEndDate = curTime + (fields.max_duration * 1000 * 60 * 60);
+  countDownTimer = curTime + (fields.initial_duration * 1000 * 60 * 60);
 }

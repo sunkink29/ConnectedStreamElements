@@ -1,4 +1,9 @@
 {
+  "name": {
+    "type": "text",
+    "label": "Timer Name",
+    "value": "timer1"
+  },
   "reset_time": {
     "group": "TimeConfig",
     "type": "button",
@@ -21,43 +26,7 @@
     "group": "TimeConfig",
     "type": "number",
     "label": "Max Stream Length (h)",
-    "value": 24
-  },
-  "sub_time": {
-    "group": "TimeConfig",
-    "type": "number",
-    "label": "Set Sub Increment (m)",
-    "value": 5
-  },
-  "bit_minimum": {
-    "group": "TimeConfig",
-    "type": "number",
-    "label": "Set Minimum Bit Donation",
-    "value": 100
-  },
-  "bit_time": {
-    "group": "TimeConfig",
-    "type": "number",
-    "label": "Set Bit Increment (m)",
-    "value": 1
-  },
-  "tip_currency": {
-    "group": "TimeConfig",
-    "type": "text",
-    "label": "Set Currency",
-    "value": "£"
-  },
-  "tip_minimum": {
-    "group": "TimeConfig",
-    "type": "number",
-    "label": "Set Minimum Donation Amount",
-    "value": 5
-  },
-  "tip_time": {
-    "group": "TimeConfig",
-    "type": "number",
-    "label": "Set Tip Increment (m)",
-    "value": 5
+    "value": 0
   },
   "fontFamily": {
     "group": "Style",
@@ -75,7 +44,7 @@
     "group": "Style",
     "type": "colorpicker",
     "label": "Select BG Colour",
-    "value": "#0000FF"
+    "value": "rgba(0, 0, 255, 0.31)"
   },
   "borderColour": {
     "group": "Style",
@@ -100,9 +69,40 @@
     "label": "How long to show rules for (s)",
     "value": 30
   },
-  "name": {
+  "sub_time": {
+    "group": "Info Panel",
+    "type": "number",
+    "label": "Set Sub Increment (m)",
+    "value": 5
+  },
+  "bit_minimum": {
+    "group": "Info Panel",
+    "type": "number",
+    "label": "Set Minimum Bit Donation",
+    "value": 100
+  },
+  "bit_time": {
+    "group": "Info Panel",
+    "type": "number",
+    "label": "Set Bit Increment (m)",
+    "value": 1
+  },
+  "tip_currency": {
+    "group": "Info Panel",
     "type": "text",
-    "label": "Timer Name",
-    "value": "timer1"
+    "label": "Set Currency",
+    "value": "$"
+  },
+  "tip_minimum": {
+    "group": "Info Panel",
+    "type": "number",
+    "label": "Set Minimum Donation Amount",
+    "value": 5
+  },
+  "tip_time": {
+    "group": "Info Panel",
+    "type": "number",
+    "label": "Set Tip Increment (m)",
+    "value": 5
   }
 }

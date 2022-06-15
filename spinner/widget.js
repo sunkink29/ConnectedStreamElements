@@ -1,19 +1,16 @@
-var isEditor = false;
-SE_API.getOverlayStatus().then((value) => isEditor = value.isEditorMode);
 let fields;
+let isEditor = false;
 let wheel;
 let segments;
 let wheelSpinning = false
 let curData = { num: 1, type: 'subbed', name: 'test User', amount: 1 }
+var lastEventTime = 0;
 
-const random_hex_color_code = () => {
-  let n = (Math.random() * 0xfffff * 1000000).toString(16);
-  return '#' + n.slice(0, 6);
-};
-
-window.addEventListener('onWidgetLoad', function (obj) {
-  fields = obj.detail.fieldData
+function onWidgetLoad(obj) {
+  fields = obj.detail.fieldData;
   segments = JSON.parse(fields.segmentConfig);
+
+  SE_API.getOverlayStatus().then((value) => isEditor = value.isEditorMode);
 
   let sumWeights = 0;
   const weights = segments.map(segment => segment.weight).filter(s => s);
@@ -51,38 +48,41 @@ window.addEventListener('onWidgetLoad', function (obj) {
     wheel.wheelImage = loadedImg;              // Make wheelImage equal the loaded image object.
     wheel.draw();                              // Also call draw function to render the wheel.
   };
-});
+}
 
-//** UPDATE INFO WIDGET INFORMATION
-window.addEventListener('onEventReceived', function (obj) {
-  const listener = obj.detail.listener;
-  const event = obj.detail.event;
-  const eventMsg = event.data?.value;
-  const isTriggered = eventMsg?.dest === fields.wheelName && eventMsg?.isEditor === isEditor;
+function onWidgetButton(data) {
+  if (data.field === 'spinButton') {
+    wheel.rotationAngle = 0;
+    // wheel.stopAnimation(false);
+    // wheel.startAnimation();
+    // wheelSpinning = true;
+  } else if (data.field === 'reload' && isEditor) {
+    document.location.href = document.location.href;
+  }
+}
 
-  if (event.listener === 'widget-button') {
-    if (event.field === 'spinButton') {
-      wheel.rotationAngle = 0;
-      // wheel.stopAnimation(false);
-      // wheel.startAnimation();
-      // wheelSpinning = true;
-    } else if (event.field === 'reload' && isEditor) {
-      document.location.href = document.location.href;
-    }
-  } else if (listener === 'kvstore:update' && isTriggered && !wheelSpinning) {
-    curData = event.data.value.data;
+function onKVStoreUpdate(data) {
+  const value = data.value
+  const isEventMsg = data.key === 'customWidget.eventMessage';
+  const nameMatch = value.dest === fields.name;
+  const isEditorMatch = value.isEditor === isEditor
+  const newEvent = value.curTime > lastEventTime;
+
+  if (isEventMsg && nameMatch && isEditorMatch && newEvent && !wheelSpinning) {
+    lastEventTime = value.curTime;
+    curData = value.data;
     wheel.rotationAngle = 0;
     wheel.stopAnimation(false);
     wheel.startAnimation();
     wheelSpinning = true;
   }
-});
+}
 
 function onWheelStop() {
   wheelSpinning = false;
   const segment = segments[wheel.getIndicatedSegmentNumber() - 1];
   if (segment.dest) {
-    SE_API.store.set('test', {
+    SE_API.store.set('eventMessage', {
       dest: segment.dest,
       msg: segment.msg,
       data: { ...curData, num: curData.num * segment.multiplier },
@@ -91,3 +91,8 @@ function onWheelStop() {
     });
   }
 }
+
+const random_hex_color_code = () => {
+  let n = (Math.random() * 0xfffff * 1000000).toString(16);
+  return '#' + n.slice(0, 6);
+};

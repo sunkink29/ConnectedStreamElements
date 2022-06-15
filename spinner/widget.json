@@ -4,7 +4,7 @@
     "label": "Spin wheel",
     "value": "spin"
   },
-  "wheelName": {
+  "name": {
     "type": "text",
     "label": "Wheel Name",
     "value": "wheel1"
