@@ -1,0 +1,1 @@
+A widget that listens for subs, tips, or bits and then adds time to a timer or spins a wheel
